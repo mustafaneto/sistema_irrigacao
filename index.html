@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Irrigação Inteligente</title>
+    <link rel="stylesheet" href="styles/main.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <i class="fas fa-tint"></i>
+                    <h1>Sistema de Irrigação</h1>
+                </div>
+                <nav class="nav">
+                    <button class="nav-btn active" data-tab="dashboard">
+                        <i class="fas fa-chart-line"></i>
+                        Dashboard
+                    </button>
+                    <button class="nav-btn" data-tab="historico">
+                        <i class="fas fa-history"></i>
+                        Histórico
+                    </button>
+                    <button class="nav-btn" data-tab="configuracoes">
+                        <i class="fas fa-cog"></i>
+                        Configurações
+                    </button>
+                    <button class="nav-btn" data-tab="alertas">
+                        <i class="fas fa-bell"></i>
+                        Alertas
+                        <span class="badge" id="alertas-badge">0</span>
+                    </button>
+                </nav>
+                <div class="header-actions">
+                    <button class="btn btn-secondary" id="refresh-btn">
+                        <i class="fas fa-sync-alt"></i>
+                        Atualizar
+                    </button>
+                    <div class="status-indicator">
+                        <span class="status-dot" id="mqtt-status"></span>
+                        <span class="status-text" id="mqtt-text">Conectando...</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main">
+        <div class="container">
+            <!-- Dashboard Tab -->
+            <div class="tab-content active" id="dashboard">
+                <!-- Status Cards -->
+                <div class="status-grid">
+                    <div class="status-card">
+                        <div class="card-header">
+                            <i class="fas fa-tint"></i>
+                            <h3>Umidade Atual</h3>
+                        </div>
+                        <div class="card-content">
+                            <div class="umidade-display">
+                                <span class="umidade-valor" id="umidade-atual">--</span>
+                                <span class="umidade-unidade">%</span>
+                            </div>
+                            <div class="umidade-bar">
+                                <div class="umidade-progress" id="umidade-progress"></div>
+                            </div>
+                            <div class="umidade-status" id="umidade-status">Carregando...</div>
+                        </div>
+                    </div>
+
+                    <div class="status-card">
+                        <div class="card-header">
+                            <i class="fas fa-power-off"></i>
+                            <h3>Status do Relé</h3>
+                        </div>
+                        <div class="card-content">
+                            <div class="rele-status" id="rele-status">
+                                <i class="fas fa-circle"></i>
+                                <span>Desconectado</span>
+                            </div>
+                            <div class="rele-info">
+                                <p>Última ativação: <span id="ultima-ativacao">--</span></p>
+                                <p>Ativações hoje: <span id="ativacoes-hoje">0</span></p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="status-card">
+                        <div class="card-header">
+                            <i class="fas fa-chart-bar"></i>
+                            <h3>Estatísticas</h3>
+                        </div>
+                        <div class="card-content">
+                            <div class="stats-grid">
+                                <div class="stat-item">
+                                    <span class="stat-label">Média</span>
+                                    <span class="stat-value" id="umidade-media">--%</span>
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-label">Mínima</span>
+                                    <span class="stat-value" id="umidade-minima">--%</span>
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-label">Máxima</span>
+                                    <span class="stat-value" id="umidade-maxima">--%</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="status-card">
+                        <div class="card-header">
+                            <i class="fas fa-clock"></i>
+                            <h3>Última Atualização</h3>
+                        </div>
+                        <div class="card-content">
+                            <div class="last-update" id="ultima-atualizacao">
+                                <i class="fas fa-sync-alt"></i>
+                                <span>Carregando...</span>
+                            </div>
+                            <div class="update-info">
+                                <p>Próxima leitura em: <span id="proxima-leitura">--</span></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Charts Section -->
+                <div class="charts-section">
+                    <div class="chart-container">
+                        <div class="chart-header">
+                            <h3>Variação da Umidade (24h)</h3>
+                            <div class="chart-controls">
+                                <button class="btn btn-sm btn-secondary" data-period="6">6h</button>
+                                <button class="btn btn-sm btn-primary active" data-period="24">24h</button>
+                                <button class="btn btn-sm btn-secondary" data-period="48">48h</button>
+                            </div>
+                        </div>
+                        <div class="chart-content">
+                            <canvas id="umidade-chart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Actions -->
+                <div class="quick-actions">
+                    <h3>Ações Rápidas</h3>
+                    <div class="actions-grid">
+                        <button class="action-btn" id="manual-irrigacao">
+                            <i class="fas fa-play"></i>
+                            <span>Ativar Irrigação</span>
+                        </button>
+                        <button class="action-btn" id="stop-irrigacao">
+                            <i class="fas fa-stop"></i>
+                            <span>Parar Irrigação</span>
+                        </button>
+                        <button class="action-btn" id="test-sensor">
+                            <i class="fas fa-vial"></i>
+                            <span>Testar Sensor</span>
+                        </button>
+                        <button class="action-btn" id="export-data">
+                            <i class="fas fa-download"></i>
+                            <span>Exportar Dados</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Histórico Tab -->
+            <div class="tab-content" id="historico">
+                <div class="historico-header">
+                    <h2>Histórico de Leituras</h2>
+                    <div class="filtros">
+                        <div class="filtro-grupo">
+                            <label for="data-inicio">Data Início:</label>
+                            <input type="date" id="data-inicio" class="form-input">
+                        </div>
+                        <div class="filtro-grupo">
+                            <label for="data-fim">Data Fim:</label>
+                            <input type="date" id="data-fim" class="form-input">
+                        </div>
+                        <button class="btn btn-primary" id="aplicar-filtros">
+                            <i class="fas fa-filter"></i>
+                            Aplicar
+                        </button>
+                    </div>
+                </div>
+                <div class="historico-content">
+                    <div class="table-container">
+                        <table class="data-table" id="historico-table">
+                            <thead>
+                                <tr>
+                                    <th>Data/Hora</th>
+                                    <th>Umidade (%)</th>
+                                    <th>Valor Analógico</th>
+                                    <th>Status Relé</th>
+                                </tr>
+                            </thead>
+                            <tbody id="historico-tbody">
+                                <!-- Dados carregados via JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="pagination" id="historico-pagination">
+                        <!-- Paginação carregada via JavaScript -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Configurações Tab -->
+            <div class="tab-content" id="configuracoes">
+                <div class="config-header">
+                    <h2>Configurações do Sistema</h2>
+                    <button class="btn btn-secondary" id="reset-config">
+                        <i class="fas fa-undo"></i>
+                        Resetar Padrões
+                    </button>
+                </div>
+                <div class="config-content">
+                    <div class="config-grid">
+                        <div class="config-card">
+                            <h3>Limites de Umidade</h3>
+                            <div class="config-item">
+                                <label for="umidade-minima">Umidade Mínima (%)</label>
+                                <input type="number" id="umidade-minima" class="form-input" min="0" max="100">
+                                <p class="config-desc">Umidade abaixo da qual a irrigação é ativada</p>
+                            </div>
+                            <div class="config-item">
+                                <label for="umidade-maxima">Umidade Máxima (%)</label>
+                                <input type="number" id="umidade-maxima" class="form-input" min="0" max="100">
+                                <p class="config-desc">Umidade acima da qual a irrigação é desativada</p>
+                            </div>
+                        </div>
+
+                        <div class="config-card">
+                            <h3>Alertas</h3>
+                            <div class="config-item">
+                                <label for="alerta-umidade-baixa">Alerta Umidade Baixa (%)</label>
+                                <input type="number" id="alerta-umidade-baixa" class="form-input" min="0" max="100">
+                                <p class="config-desc">Limite para alerta de umidade muito baixa</p>
+                            </div>
+                            <div class="config-item">
+                                <label for="alerta-umidade-alta">Alerta Umidade Alta (%)</label>
+                                <input type="number" id="alerta-umidade-alta" class="form-input" min="0" max="100">
+                                <p class="config-desc">Limite para alerta de umidade muito alta</p>
+                            </div>
+                        </div>
+
+                        <div class="config-card">
+                            <h3>Intervalos</h3>
+                            <div class="config-item">
+                                <label for="intervalo-leitura">Intervalo de Leitura (ms)</label>
+                                <input type="number" id="intervalo-leitura" class="form-input" min="1000" max="60000">
+                                <p class="config-desc">Intervalo entre leituras do sensor</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="config-actions">
+                        <button class="btn btn-primary" id="salvar-config">
+                            <i class="fas fa-save"></i>
+                            Salvar Configurações
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Alertas Tab -->
+            <div class="tab-content" id="alertas">
+                <div class="alertas-header">
+                    <h2>Alertas do Sistema</h2>
+                    <button class="btn btn-secondary" id="marcar-lidos">
+                        <i class="fas fa-check-double"></i>
+                        Marcar Todos como Lidos
+                    </button>
+                </div>
+                <div class="alertas-content">
+                    <div class="alertas-filtros">
+                        <button class="filtro-alerta active" data-tipo="todos">Todos</button>
+                        <button class="filtro-alerta" data-tipo="baixa_umidade">Baixa Umidade</button>
+                        <button class="filtro-alerta" data-tipo="alta_umidade">Alta Umidade</button>
+                        <button class="filtro-alerta" data-tipo="erro_sensor">Erro Sensor</button>
+                        <button class="filtro-alerta" data-tipo="erro_rele">Erro Relé</button>
+                    </div>
+                    <div class="alertas-list" id="alertas-list">
+                        <!-- Alertas carregados via JavaScript -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loading-overlay">
+        <div class="loading-spinner">
+            <i class="fas fa-spinner fa-spin"></i>
+            <p>Carregando...</p>
+        </div>
+    </div>
+
+    <!-- Toast Notifications -->
+    <div class="toast-container" id="toast-container"></div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="js/config.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/utils.js"></script>
+    <script src="js/charts.js"></script>
+    <script src="js/dashboard.js"></script>
+    <script src="js/historico.js"></script>
+    <script src="js/configuracoes.js"></script>
+    <script src="js/alertas.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html> 
