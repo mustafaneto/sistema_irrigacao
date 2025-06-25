@@ -4,6 +4,8 @@
 
 Frontend moderno e responsivo para o Sistema de Irrigação Inteligente, desenvolvido em JavaScript vanilla com HTML5 e CSS3. O sistema permite monitorar e controlar um sistema de irrigação baseado em ESP8266 através de uma interface web intuitiva.
 
+[sistema](https://github.com/user-attachments/assets/a944e731-3228-4194-a285-52480e075587)
+
 ## 🚀 Funcionalidades
 
 ### Dashboard Principal
