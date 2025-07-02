@@ -15,28 +15,7 @@ class Dashboard {
 
     // Configurar event listeners
     setupEventListeners() {
-        // Botão de atualizar
-        const refreshBtn = document.getElementById('refresh-btn');
-        if (refreshBtn) {
-            refreshBtn.addEventListener('click', () => this.refreshData());
-        }
-
-        // Ações rápidas
-        const manualIrrigacao = document.getElementById('manual-irrigacao');
-        if (manualIrrigacao) {
-            manualIrrigacao.addEventListener('click', () => this.ativarIrrigacaoManual());
-        }
-
-        const stopIrrigacao = document.getElementById('stop-irrigacao');
-        if (stopIrrigacao) {
-            stopIrrigacao.addEventListener('click', () => this.pararIrrigacaoManual());
-        }
-
-        const testSensor = document.getElementById('test-sensor');
-        if (testSensor) {
-            testSensor.addEventListener('click', () => this.testarSensor());
-        }
-
+        
         const exportData = document.getElementById('export-data');
         if (exportData) {
             exportData.addEventListener('click', () => this.exportarDados());
@@ -67,6 +46,12 @@ class Dashboard {
                 api.getEstatisticasUmidade(),
                 api.getStatusMQTT()
             ]);
+
+            console.log('Dados carregados:', {
+                ultimaLeitura,
+                estatisticas,
+                statusMQTT
+            });
 
             this.updateDashboard(ultimaLeitura, estatisticas, statusMQTT);
             
@@ -224,7 +209,13 @@ class Dashboard {
         const statusText = document.getElementById('mqtt-text');
         
         if (statusDot && statusText) {
-            if (data && data.connected) {
+            // Verificar se data existe e tem a estrutura esperada
+            const isConnected = data && 
+                               data.success && 
+                               data.data && 
+                               data.data.connected === true;
+       
+            if (isConnected) {
                 statusDot.className = 'status-dot connected';
                 statusText.textContent = 'Conectado';
             } else {
@@ -264,76 +255,6 @@ class Dashboard {
         if (this.autoRefreshInterval) {
             clearInterval(this.autoRefreshInterval);
             this.autoRefreshInterval = null;
-        }
-    }
-
-    // Ativar irrigação manual
-    async ativarIrrigacaoManual() {
-        try {
-            Utils.mostrarLoading();
-            
-            // Simular ativação manual (aqui você pode implementar a chamada real para a API)
-            await new Promise(resolve => setTimeout(resolve, 1000));
-            
-            Utils.mostrarNotificacao('Irrigação ativada manualmente!', 'success');
-            
-            // Atualizar dados após ativação
-            setTimeout(() => this.refreshData(), 2000);
-            
-        } catch (error) {
-            console.error('Erro ao ativar irrigação:', error);
-            Utils.tratarErroAPI(error);
-        } finally {
-            Utils.ocultarLoading();
-        }
-    }
-
-    // Parar irrigação manual
-    async pararIrrigacaoManual() {
-        try {
-            Utils.mostrarLoading();
-            
-            // Simular parada manual
-            await new Promise(resolve => setTimeout(resolve, 1000));
-            
-            Utils.mostrarNotificacao('Irrigação parada manualmente!', 'success');
-            
-            // Atualizar dados após parada
-            setTimeout(() => this.refreshData(), 2000);
-            
-        } catch (error) {
-            console.error('Erro ao parar irrigação:', error);
-            Utils.tratarErroAPI(error);
-        } finally {
-            Utils.ocultarLoading();
-        }
-    }
-
-    // Testar sensor
-    async testarSensor() {
-        try {
-            Utils.mostrarLoading();
-            
-            // Simular teste do sensor
-            await new Promise(resolve => setTimeout(resolve, 2000));
-            
-            const umidadeTeste = Math.random() * 100;
-            await api.inserirLeitura({
-                umidade: umidadeTeste,
-                analogico: Math.round((1 - umidadeTeste / 100) * 1023),
-                statusRele: umidadeTeste <= 30 ? 'ligado' : 'desligado'
-            });
-            
-            Utils.mostrarNotificacao(`Teste do sensor concluído! Umidade: ${Utils.formatarNumero(umidadeTeste)}%`, 'success');
-            
-            // Atualizar dados após teste
-            setTimeout(() => this.refreshData(), 1000);
-            
-        } catch (error) {
-            console.error('Erro ao testar sensor:', error);
-            Utils.tratarErroAPI(error);
-        } finally {
-            Utils.ocultarLoading();
         }
     }
 

@@ -267,27 +267,11 @@ class Historico {
         }
     }
 
-    // Buscar dados por texto
-    async buscarPorTexto(texto) {
-        try {
-            // Implementar busca por texto se necessário
-            console.log('Busca por texto:', texto);
-            
-        } catch (error) {
-            console.error('Erro na busca:', error);
-            Utils.tratarErroAPI(error);
-        }
-    }
-
     // Atualizar dados
     refresh() {
         this.loadData();
     }
 
-    // Destruir módulo
-    destroy() {
-        // Limpar event listeners se necessário
-    }
 }
 
 // Instância global do histórico

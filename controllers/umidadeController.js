@@ -2,7 +2,6 @@ const { executeQuery } = require('../config/database');
 const moment = require('moment');
 
 class UmidadeController {
-    // Obter última leitura de umidade
     async getUltimaLeitura(req, res) {
         try {
             const sql = `

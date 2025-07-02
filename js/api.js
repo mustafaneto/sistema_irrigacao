@@ -83,52 +83,6 @@ class API {
         });
     }
 
-    // Métodos para Configurações
-    async getConfiguracoes() {
-        return this.request(API_ENDPOINTS.CONFIGURACAO.TODAS);
-    }
-
-    async getConfiguracao(nome) {
-        const endpoint = API_ENDPOINTS.CONFIGURACAO.ESPECIFICA.replace(':nome', nome);
-        return this.request(endpoint);
-    }
-
-    async atualizarConfiguracao(nome, valor) {
-        const endpoint = API_ENDPOINTS.CONFIGURACAO.ATUALIZAR.replace(':nome', nome);
-        return this.request(endpoint, {
-            method: 'PUT',
-            body: JSON.stringify({ valor })
-        });
-    }
-
-    async getConfiguracoesESP() {
-        return this.request(API_ENDPOINTS.CONFIGURACAO.ESP);
-    }
-
-    async resetarConfiguracoes() {
-        return this.request(API_ENDPOINTS.CONFIGURACAO.RESETAR, {
-            method: 'POST'
-        });
-    }
-
-    // Métodos para Alertas
-    async getAlertas() {
-        return this.request(API_ENDPOINTS.ALERTAS.TODOS);
-    }
-
-    async marcarAlertaLido(id) {
-        const endpoint = API_ENDPOINTS.ALERTAS.MARCAR_LIDO.replace(':id', id);
-        return this.request(endpoint, {
-            method: 'PUT'
-        });
-    }
-
-    async marcarTodosAlertasLidos() {
-        return this.request(API_ENDPOINTS.ALERTAS.MARCAR_TODOS_LIDOS, {
-            method: 'PUT'
-        });
-    }
-
     // Métodos para Histórico do Relé
     async getHistoricoRele(params = {}) {
         const queryString = new URLSearchParams(params).toString();

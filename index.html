@@ -26,21 +26,8 @@
                         <i class="fas fa-history"></i>
                         Histórico
                     </button>
-                    <button class="nav-btn" data-tab="configuracoes">
-                        <i class="fas fa-cog"></i>
-                        Configurações
-                    </button>
-                    <button class="nav-btn" data-tab="alertas">
-                        <i class="fas fa-bell"></i>
-                        Alertas
-                        <span class="badge" id="alertas-badge">0</span>
-                    </button>
                 </nav>
                 <div class="header-actions">
-                    <button class="btn btn-secondary" id="refresh-btn">
-                        <i class="fas fa-sync-alt"></i>
-                        Atualizar
-                    </button>
                     <div class="status-indicator">
                         <span class="status-dot" id="mqtt-status"></span>
                         <span class="status-text" id="mqtt-text">Conectando...</span>
@@ -135,7 +122,7 @@
                 <div class="charts-section">
                     <div class="chart-container">
                         <div class="chart-header">
-                            <h3>Variação da Umidade (24h)</h3>
+                            <h3>Variação da Umidade (Tempo)</h3>
                             <div class="chart-controls">
                                 <button class="btn btn-sm btn-secondary" data-period="6">6h</button>
                                 <button class="btn btn-sm btn-primary active" data-period="24">24h</button>
@@ -152,18 +139,6 @@
                 <div class="quick-actions">
                     <h3>Ações Rápidas</h3>
                     <div class="actions-grid">
-                        <button class="action-btn" id="manual-irrigacao">
-                            <i class="fas fa-play"></i>
-                            <span>Ativar Irrigação</span>
-                        </button>
-                        <button class="action-btn" id="stop-irrigacao">
-                            <i class="fas fa-stop"></i>
-                            <span>Parar Irrigação</span>
-                        </button>
-                        <button class="action-btn" id="test-sensor">
-                            <i class="fas fa-vial"></i>
-                            <span>Testar Sensor</span>
-                        </button>
                         <button class="action-btn" id="export-data">
                             <i class="fas fa-download"></i>
                             <span>Exportar Dados</span>
@@ -212,86 +187,6 @@
                     </div>
                 </div>
             </div>
-
-            <!-- Configurações Tab -->
-            <div class="tab-content" id="configuracoes">
-                <div class="config-header">
-                    <h2>Configurações do Sistema</h2>
-                    <button class="btn btn-secondary" id="reset-config">
-                        <i class="fas fa-undo"></i>
-                        Resetar Padrões
-                    </button>
-                </div>
-                <div class="config-content">
-                    <div class="config-grid">
-                        <div class="config-card">
-                            <h3>Limites de Umidade</h3>
-                            <div class="config-item">
-                                <label for="umidade-minima">Umidade Mínima (%)</label>
-                                <input type="number" id="umidade-minima" class="form-input" min="0" max="100">
-                                <p class="config-desc">Umidade abaixo da qual a irrigação é ativada</p>
-                            </div>
-                            <div class="config-item">
-                                <label for="umidade-maxima">Umidade Máxima (%)</label>
-                                <input type="number" id="umidade-maxima" class="form-input" min="0" max="100">
-                                <p class="config-desc">Umidade acima da qual a irrigação é desativada</p>
-                            </div>
-                        </div>
-
-                        <div class="config-card">
-                            <h3>Alertas</h3>
-                            <div class="config-item">
-                                <label for="alerta-umidade-baixa">Alerta Umidade Baixa (%)</label>
-                                <input type="number" id="alerta-umidade-baixa" class="form-input" min="0" max="100">
-                                <p class="config-desc">Limite para alerta de umidade muito baixa</p>
-                            </div>
-                            <div class="config-item">
-                                <label for="alerta-umidade-alta">Alerta Umidade Alta (%)</label>
-                                <input type="number" id="alerta-umidade-alta" class="form-input" min="0" max="100">
-                                <p class="config-desc">Limite para alerta de umidade muito alta</p>
-                            </div>
-                        </div>
-
-                        <div class="config-card">
-                            <h3>Intervalos</h3>
-                            <div class="config-item">
-                                <label for="intervalo-leitura">Intervalo de Leitura (ms)</label>
-                                <input type="number" id="intervalo-leitura" class="form-input" min="1000" max="60000">
-                                <p class="config-desc">Intervalo entre leituras do sensor</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="config-actions">
-                        <button class="btn btn-primary" id="salvar-config">
-                            <i class="fas fa-save"></i>
-                            Salvar Configurações
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Alertas Tab -->
-            <div class="tab-content" id="alertas">
-                <div class="alertas-header">
-                    <h2>Alertas do Sistema</h2>
-                    <button class="btn btn-secondary" id="marcar-lidos">
-                        <i class="fas fa-check-double"></i>
-                        Marcar Todos como Lidos
-                    </button>
-                </div>
-                <div class="alertas-content">
-                    <div class="alertas-filtros">
-                        <button class="filtro-alerta active" data-tipo="todos">Todos</button>
-                        <button class="filtro-alerta" data-tipo="baixa_umidade">Baixa Umidade</button>
-                        <button class="filtro-alerta" data-tipo="alta_umidade">Alta Umidade</button>
-                        <button class="filtro-alerta" data-tipo="erro_sensor">Erro Sensor</button>
-                        <button class="filtro-alerta" data-tipo="erro_rele">Erro Relé</button>
-                    </div>
-                    <div class="alertas-list" id="alertas-list">
-                        <!-- Alertas carregados via JavaScript -->
-                    </div>
-                </div>
-            </div>
         </div>
     </main>
 
@@ -308,14 +203,15 @@
 
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns"></script>
+
+
     <script src="js/config.js"></script>
     <script src="js/api.js"></script>
     <script src="js/utils.js"></script>
     <script src="js/charts.js"></script>
     <script src="js/dashboard.js"></script>
     <script src="js/historico.js"></script>
-    <script src="js/configuracoes.js"></script>
-    <script src="js/alertas.js"></script>
     <script src="js/app.js"></script>
 </body>
 </html> 

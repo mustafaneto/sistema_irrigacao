@@ -18,9 +18,9 @@ const CONFIG = {
     
     // Limites de umidade
     UMIDADE_LIMITES: {
-        baixa: 30,
-        alta: 60,
-        critica: 20
+        baixa: 10,
+        alta: 30,
+        critica: 5
     },
     
     // Status do relé
@@ -29,21 +29,6 @@ const CONFIG = {
         desligado: 'desligado'
     },
     
-    // Tipos de alerta
-    ALERTA_TIPOS: {
-        baixa_umidade: 'Baixa Umidade',
-        alta_umidade: 'Alta Umidade',
-        erro_sensor: 'Erro Sensor',
-        erro_rele: 'Erro Relé'
-    },
-    
-    // Níveis de alerta
-    ALERTA_NIVEIS: {
-        baixo: 'Baixo',
-        medio: 'Médio',
-        alto: 'Alto',
-        critico: 'Crítico'
-    },
     
     // Paginação
     PAGINACAO: {
@@ -66,22 +51,6 @@ const API_ENDPOINTS = {
         ESTATISTICAS: '/umidade/estatisticas',
         GRAFICO: '/umidade/grafico',
         INSERIR: '/umidade/inserir'
-    },
-    
-    // Configurações
-    CONFIGURACAO: {
-        TODAS: '/configuracao',
-        ESPECIFICA: '/configuracao/:nome',
-        ATUALIZAR: '/configuracao/:nome',
-        ESP: '/configuracao/esp',
-        RESETAR: '/configuracao/resetar'
-    },
-    
-    // Alertas
-    ALERTAS: {
-        TODOS: '/alertas',
-        MARCAR_LIDO: '/alertas/:id/lido',
-        MARCAR_TODOS_LIDOS: '/alertas/marcar-todos-lidos'
     },
     
     // Histórico do relé

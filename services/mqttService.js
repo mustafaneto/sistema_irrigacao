@@ -28,7 +28,7 @@ class MQTTService {
         this.client = mqtt.connect(options);
 
         this.client.on('connect', () => {
-            console.log('✅ Conectado ao broker MQTT');
+            console.log('Conectado ao broker MQTT');
             this.isConnected = true;
             this.subscribeToTopics();
         });
@@ -38,17 +38,17 @@ class MQTTService {
         });
 
         this.client.on('error', (error) => {
-            console.error('❌ Erro MQTT:', error);
+            console.error('Erro MQTT:', error);
             this.isConnected = false;
         });
 
         this.client.on('close', () => {
-            console.log('🔌 Conexão MQTT fechada');
+            console.log('Conexão MQTT fechada');
             this.isConnected = false;
         });
 
         this.client.on('reconnect', () => {
-            console.log('🔄 Reconectando ao MQTT...');
+            console.log('Reconectando ao MQTT...');
         });
     }
 
@@ -59,7 +59,7 @@ class MQTTService {
                 if (err) {
                     console.error(`Erro ao se inscrever no tópico ${topic}:`, err);
                 } else {
-                    console.log(`📡 Inscrito no tópico: ${topic}`);
+                    console.log(`Inscrito no tópico: ${topic}`);
                 }
             });
         });
@@ -69,7 +69,7 @@ class MQTTService {
     async handleMessage(topic, message) {
         try {
             const payload = message.toString();
-            console.log(`📨 Mensagem recebida em ${topic}: ${payload}`);
+            console.log(`Mensagem recebida em ${topic}: ${payload}`);
 
             switch (topic) {
                 case this.topics.umidade:
@@ -91,8 +91,8 @@ class MQTTService {
         try {
             const umidade = parseFloat(payload);
             const valorAnalogico = Math.round((1 - umidade / 100) * 1023);
-            // Remover cálculo automático do status do relé - o Arduino já envia isso
-            const statusRele = umidade <= 60 ? 'ligado' : 'desligado';
+
+            const statusRele = umidade <= 30 ? 'ligado' : 'desligado';
 
             // Salvar leitura no banco
             const sql = `
@@ -101,10 +101,7 @@ class MQTTService {
             `;
             await executeQuery(sql, [umidade, valorAnalogico, statusRele]);
 
-            // Verificar alertas
-            await this.verificarAlertas(umidade);
-
-            console.log(`💧 Umidade processada: ${umidade}%`);
+            console.log(`Umidade processada: ${umidade}%`);
         } catch (error) {
             console.error('Erro ao processar leitura de umidade:', error);
         }
@@ -131,7 +128,7 @@ class MQTTService {
             `;
             await executeQuery(sql, [acao, motivo, umidadeAtual]);
 
-            console.log(`🔌 Status do relé processado: ${acao}`);
+            console.log(`Status do relé processado: ${acao}`);
         } catch (error) {
             console.error('Erro ao processar status do relé:', error);
         }
@@ -146,57 +143,6 @@ class MQTTService {
         }
     }
 
-    // Verificar alertas baseados na umidade
-    async verificarAlertas(umidade) {
-        try {
-            const [configBaixa] = await executeQuery(
-                'SELECT valor FROM configuracoes WHERE nome = "ALERTA_UMIDADE_BAIXA"'
-            );
-            const [configAlta] = await executeQuery(
-                'SELECT valor FROM configuracoes WHERE nome = "ALERTA_UMIDADE_ALTA"'
-            );
-
-            const limiteBaixa = parseFloat(configBaixa?.valor || 25);
-            const limiteAlta = parseFloat(configAlta?.valor || 70);
-
-            if (umidade <= limiteBaixa) {
-                await this.criarAlerta('baixa_umidade', `Umidade muito baixa: ${umidade}%`, 'alto');
-            } else if (umidade >= limiteAlta) {
-                await this.criarAlerta('alta_umidade', `Umidade muito alta: ${umidade}%`, 'medio');
-            }
-        } catch (error) {
-            console.error('Erro ao verificar alertas:', error);
-        }
-    }
-
-    // Criar alerta
-    async criarAlerta(tipo, mensagem, nivel) {
-        try {
-            const sql = `
-                INSERT INTO alertas (tipo, mensagem, nivel)
-                VALUES (?, ?, ?)
-            `;
-            await executeQuery(sql, [tipo, mensagem, nivel]);
-            console.log(`⚠️ Alerta criado: ${mensagem}`);
-        } catch (error) {
-            console.error('Erro ao criar alerta:', error);
-        }
-    }
-
-    // Publicar mensagem
-    publish(topic, message) {
-        if (this.isConnected && this.client) {
-            this.client.publish(topic, message, (err) => {
-                if (err) {
-                    console.error(`Erro ao publicar em ${topic}:`, err);
-                } else {
-                    console.log(`📤 Mensagem publicada em ${topic}: ${message}`);
-                }
-            });
-        } else {
-            console.error('Cliente MQTT não conectado');
-        }
-    }
 
     // Desconectar
     disconnect() {

@@ -22,11 +22,9 @@ const pool = mysql.createPool(dbConfig);
 async function testConnection() {
     try {
         const connection = await pool.getConnection();
-        console.log('✅ Conexão com MySQL estabelecida com sucesso!');
         connection.release();
         return true;
     } catch (error) {
-        console.error('❌ Erro ao conectar com MySQL:', error.message);
         return false;
     }
 }
