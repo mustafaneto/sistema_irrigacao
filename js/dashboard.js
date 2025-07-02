@@ -91,7 +91,10 @@ class Dashboard {
         // Atualizar barra de progresso
         const progressElement = document.getElementById('umidade-progress');
         if (progressElement) {
-            progressElement.style.width = `${umidade}%`;
+            // Garantir que a umidade esteja entre 0 e 100
+            let umidadeBarra = umidade;
+            if (umidade < 0) umidadeBarra = 0;
+            progressElement.style.width = `${umidadeBarra}%`;
         }
 
         // Atualizar status da umidade

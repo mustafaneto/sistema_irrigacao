@@ -27,12 +27,6 @@
                         Histórico
                     </button>
                 </nav>
-                <div class="header-actions">
-                    <div class="status-indicator">
-                        <span class="status-dot" id="mqtt-status"></span>
-                        <span class="status-text" id="mqtt-text">Conectando...</span>
-                    </div>
-                </div>
             </div>
         </div>
     </header>
@@ -100,22 +94,6 @@
                             </div>
                         </div>
                     </div>
-
-                    <div class="status-card">
-                        <div class="card-header">
-                            <i class="fas fa-clock"></i>
-                            <h3>Última Atualização</h3>
-                        </div>
-                        <div class="card-content">
-                            <div class="last-update" id="ultima-atualizacao">
-                                <i class="fas fa-sync-alt"></i>
-                                <span>Carregando...</span>
-                            </div>
-                            <div class="update-info">
-                                <p>Próxima leitura em: <span id="proxima-leitura">--</span></p>
-                            </div>
-                        </div>
-                    </div>
                 </div>
 
                 <!-- Charts Section -->
@@ -124,9 +102,7 @@
                         <div class="chart-header">
                             <h3>Variação da Umidade (Tempo)</h3>
                             <div class="chart-controls">
-                                <button class="btn btn-sm btn-secondary" data-period="6">6h</button>
-                                <button class="btn btn-sm btn-primary active" data-period="24">24h</button>
-                                <button class="btn btn-sm btn-secondary" data-period="48">48h</button>
+                                <button class="btn btn-sm btn-primary active" data-period="1">1h</button>
                             </div>
                         </div>
                         <div class="chart-content">
