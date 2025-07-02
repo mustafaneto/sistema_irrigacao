@@ -6,6 +6,8 @@ Sistema completo de monitoramento e controle de irrigação usando ESP8266, Node
 
 Sistema de irrigação inteligente que monitora a umidade do solo através de sensores conectados ao ESP8266 e permite controle remoto via interface web. O sistema utiliza MQTT para comunicação em tempo real e MySQL para armazenamento de dados.
 
+![sistema](sistema.jpg)
+
 ## 🚀 Funcionalidades
 
 - **Monitoramento em Tempo Real**: Visualização da umidade atual do solo
@@ -177,4 +179,4 @@ MIT License
 
 ---
 
-**Versão**: 1.0.0 
+**Sistema de Irrigação Inteligente** - Versão 1.0.0 
