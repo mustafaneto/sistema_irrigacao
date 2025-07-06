@@ -15,8 +15,8 @@ class MQTTService {
     // Conectar ao broker MQTT
     connect() {
         const options = {
-            host: process.env.MQTT_BROKER || '200.143.224.99',
-            port: process.env.MQTT_PORT || 1183,
+            host: process.env.MQTT_BROKER,
+            port: process.env.MQTT_PORT,
             username: process.env.MQTT_USERNAME,
             password: process.env.MQTT_PASSWORD,
             clientId: `backend_${Math.random().toString(16).slice(3)}`,
